@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f4f0e8">
+<title>兰香如故 · 你是剧中谁</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+    background:#f4f0e8;color:#2e3a2c;line-height:1.7;
+    min-height:100vh;padding-bottom:env(safe-area-inset-bottom);
+  }
+  .app{max-width:480px;margin:0 auto;padding:0 18px 48px}
+  .hidden{display:none !important}
+  .serif{font-family:Georgia,"Songti SC","SimSun",serif}
+
+  /* ---------- 封面 ---------- */
+  .intro-card{padding:56px 4px 24px;text-align:center}
+  .intro-kicker{font-size:12px;letter-spacing:.34em;color:#9aa392;text-indent:.34em}
+  .intro-title{font-family:Georgia,"Songti SC",serif;font-size:44px;letter-spacing:.14em;color:#3b4a37;margin:14px 0 4px;font-weight:600}
+  .intro-sub{font-size:15px;color:#8a917f;letter-spacing:.28em;text-indent:.28em}
+  .intro-divider{width:44px;height:1px;background:#c8c2b2;margin:26px auto}
+  .intro-desc{font-size:14.5px;color:#5e6a58;padding:0 6px}
+  .intro-dims{list-style:none;margin:26px 0 30px;text-align:left;background:#fffdf8;border:1px solid #e6e0d2;border-radius:14px;padding:16px 18px}
+  .intro-dims li{font-size:13.5px;color:#6c7566;padding:6px 0;border-bottom:1px dashed #ece6d8}
+  .intro-dims li:last-child{border-bottom:none}
+  .intro-dims b{color:#3b4a37;font-weight:600;margin-right:10px;display:inline-block;min-width:62px}
+  .btn-primary{
+    display:block;width:100%;border:none;border-radius:14px;
+    background:#3b4a37;color:#f7f4ec;font-size:16px;font-weight:600;
+    padding:16px;letter-spacing:.08em;cursor:pointer;font-family:inherit;
+    transition:transform .15s ease,opacity .15s ease;
+  }
+  .btn-primary:active{transform:scale(.98);opacity:.9}
+  .intro-note{font-size:12px;color:#a3aa9c;margin-top:14px}
+
+  /* ---------- 答题 ---------- */
+  .progress-wrap{position:sticky;top:0;z-index:20;background:linear-gradient(#f4f0e8 76%,rgba(244,240,232,0));padding:16px 0 12px}
+  .progress-meta{display:flex;justify-content:space-between;font-size:12.5px;color:#8a917f;margin-bottom:8px;letter-spacing:.04em}
+  .progress-track{height:4px;background:#e3ddce;border-radius:4px;overflow:hidden}
+  .progress-fill{height:100%;width:0;background:#7d9169;border-radius:4px;transition:width .28s ease}
+  .question-area{padding-top:14px}
+  .q-title{
+    font-family:Georgia,"Songti SC",serif;
+    font-size:19px;line-height:1.65;color:#2e3a2c;font-weight:600;
+    margin-bottom:22px;letter-spacing:.01em;
+  }
+  .option{
+    display:flex;align-items:flex-start;gap:12px;width:100%;text-align:left;
+    background:#fffdf8;border:1px solid #e4ddcd;border-radius:14px;
+    padding:15px 16px;margin-bottom:11px;font-family:inherit;
+    font-size:15px;line-height:1.62;color:#3a4536;cursor:pointer;
+    transition:border-color .16s ease,background .16s ease,transform .12s ease;
+  }
+  .option:active{transform:scale(.985)}
+  .option.selected{border-color:#7d9169;background:#eef2e8}
+  .opt-key{
+    flex:0 0 22px;height:22px;border-radius:50%;background:#f0ece1;color:#8a917f;
+    font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;
+    margin-top:2px;transition:all .16s ease;
+  }
+  .option.selected .opt-key{background:#7d9169;color:#fff}
+  .btn-ghost{
+    display:block;width:100%;margin-top:20px;padding:13px;
+    background:transparent;border:1px solid #ddd6c6;border-radius:12px;
+    font-family:inherit;font-size:14px;color:#7c8474;cursor:pointer;
+    transition:background .15s ease;
+  }
+  .btn-ghost:active{background:#eae4d8}
+  .btn-ghost:disabled{opacity:.35;pointer-events:none}
+
+  /* ---------- 结果 ---------- */
+  .result-head{text-align:center;padding:34px 0 6px}
+  .result-kicker{font-size:12px;letter-spacing:.3em;color:#9aa392;text-indent:.3em}
+  .result-title{font-family:Georgia,"Songti SC",serif;font-size:26px;color:#3b4a37;margin-top:12px;font-weight:600;letter-spacing:.04em}
+  .result-title em{font-style:normal;color:#a8443a;font-size:30px;margin-left:6px}
+
+  .match-card{
+    position:relative;margin-top:20px;border-radius:16px;padding:20px 18px 18px;
+    background:#fffdf8;border:1px solid #e6e0d2;overflow:hidden;
+  }
+  .match-card::before{
+    content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--c,#7d9169);
+  }
+  .match-card.second{opacity:.94;--c:#b8873f}
+  .match-badge{
+    display:inline-block;font-size:11px;letter-spacing:.16em;text-indent:.16em;
+    color:#fff;background:var(--c,#7d9169);border-radius:20px;padding:3px 10px;margin-bottom:12px;
+  }
+  .match-card.first .match-badge{background:#a8443a}
+  .match-name{font-family:Georgia,"Songti SC",serif;font-size:26px;color:#2e3a2c;font-weight:600;letter-spacing:.06em}
+  .match-actor{font-size:12.5px;color:#9aa392;margin-top:2px;letter-spacing:.06em}
+  .match-tagline{font-size:13.5px;color:#6c7566;margin-top:12px;line-height:1.7;padding-left:12px;border-left:2px solid #ece6d8}
+  .match-score{display:flex;align-items:baseline;gap:2px;margin-top:16px}
+  .score-num{font-family:Georgia,serif;font-size:32px;font-weight:600;color:#a8443a;line-height:1}
+  .score-unit{font-size:14px;color:#a8443a}
+  .match-bar{height:5px;background:#eee8db;border-radius:5px;margin-top:10px;overflow:hidden}
+  .match-bar i{display:block;height:100%;background:#a8443a;border-radius:5px;transition:width .8s cubic-bezier(.22,1,.36,1)}
+  .match-card.second .score-num,.match-card.second .score-unit{color:#b8873f}
+  .match-card.second .match-bar i{background:#b8873f}
+
+  .panel{margin-top:20px;background:#fffdf8;border:1px solid #e6e0d2;border-radius:16px;padding:20px 18px}
+  .panel-title{
+    font-family:Georgia,"Songti SC",serif;font-size:16px;color:#3b4a37;
+    font-weight:600;letter-spacing:.08em;margin-bottom:16px;
+    padding-left:10px;border-left:3px solid #7d9169;
+  }
+  .radar-wrap{width:100%}
+  .radar-wrap canvas{display:block;margin:0 auto}
+  .radar-legend{display:flex;justify-content:center;gap:22px;margin-top:8px;font-size:12px;color:#8a917f}
+  .radar-legend .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+  .dot.user{background:#a8443a}
+  .dot.role{background:#7d9169}
+
+  .dim-list{list-style:none;margin-top:18px;border-top:1px dashed #ece6d8;padding-top:14px}
+  .dim-list li{margin-bottom:13px}
+  .dim-list li:last-child{margin-bottom:0}
+  .dim-head{display:flex;justify-content:space-between;font-size:13px;color:#5e6a58;margin-bottom:6px}
+  .dim-head b{color:#3b4a37;font-weight:600}
+  .dim-head span{color:#9aa392;font-size:12px}
+  .dim-track{height:6px;background:#f0ece1;border-radius:6px;overflow:hidden;position:relative}
+  .dim-track i{position:absolute;left:0;top:0;bottom:0;border-radius:6px;transition:width .7s ease}
+  .dim-track .u{background:#a8443a;z-index:2;opacity:.9}
+  .dim-track .r{background:#7d9169;opacity:.35;z-index:1}
+
+  .reason-list{list-style:none}
+  .reason-list li{
+    position:relative;padding-left:22px;font-size:14px;color:#4d5847;
+    line-height:1.78;margin-bottom:14px;
+  }
+  .reason-list li:last-child{margin-bottom:0}
+  .reason-list li::before{
+    content:"";position:absolute;left:6px;top:10px;width:5px;height:5px;
+    border-radius:50%;background:#c8b8a0;
+  }
+
+  .link-item{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:13px 14px;margin-bottom:9px;border-radius:12px;
+    background:#f7f4ec;border:1px solid #ece6d8;
+    font-size:14px;color:#3b4a37;text-decoration:none;
+    transition:background .15s ease;
+  }
+  .link-item:last-child{margin-bottom:0}
+  .link-item:active{background:#eee9dd}
+  .link-item span{color:#a3aa9c;font-size:13px}
+
+  .disclaimer{
+    font-size:11.5px;color:#a8ae a1;color:#a8aea1;line-height:1.8;
+    text-align:center;margin:26px 0 20px;
+  }
+  .btn-retry{
+    display:block;width:100%;padding:15px;border-radius:14px;
+    background:transparent;border:1px solid #cdc6b5;color:#5e6a58;
+    font-family:inherit;font-size:15px;cursor:pointer;letter-spacing:.06em;
+  }
+  .btn-retry:active{background:#eae4d8}
+
+  @keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+  .anim{animation:fadeUp .28s ease both}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- 封面 -->
+  <section id="screen-intro">
+    <div class="intro-card">
+      <p class="intro-kicker">性格测试</p>
+      <h1 class="intro-title serif">兰香如故</h1>
+      <p class="intro-sub">你 是 剧 中 谁</p>
+      <div class="intro-divider"></div>
+      <p class="intro-desc">20 道情境题，5 个维度。<br>看看你与《兰香如故》里的哪个人物，骨子里最像。</p>
+      <ul class="intro-dims">
+        <li><b>韧性</b>承压不崩的能力</li>
+        <li><b>边界感</b>守分寸、知进退</li>
+        <li><b>行动力</b>把想法变成动作</li>
+        <li><b>情感表达</b>让情绪被看见</li>
+        <li><b>野心值</b>对更高位置的渴望</li>
+      </ul>
+      <button id="startBtn" class="btn-primary">开始测试</button>
+      <p class="intro-note">共 20 题 · 约 3 分钟 · 可返回修改答案</p>
+    </div>
+  </section>
+
+  <!-- 答题 -->
+  <section id="screen-quiz" class="hidden">
+    <div class="progress-wrap">
+      <div class="progress-meta">
+        <span id="qIndex">第 1 / 20 题</span>
+        <span id="qPercent">0%</span>
+      </div>
+      <div class="progress-track"><div id="progressFill" class="progress-fill"></div></div>
+    </div>
+    <div id="questionArea" class="question-area"></div>
+    <button id="prevBtn" class="btn-ghost">← 上一题</button>
+  </section>
+
+  <!-- 结果 -->
+  <section id="screen-result" class="hidden">
+    <div id="resultArea"></div>
+  </section>
+
+</div>
+
+<script>
+/* =========================================================
+   《兰香如故》性格测试
+   纯前端 · 无网络请求 · 不收集任何数据
+   ========================================================= */
+
+/* ---------- 维度 ---------- */
+const DIMS = ['韧性','边界感','行动力','情感表达','野心值'];
+
+/* ---------- 角色基准（五维，-2 ~ +2） ---------- */
+const ROLES = [
+  {
+    key:'xulanxiang',
+    name:'许兰香',
+    actor:'谭松韵',
+    color:'#7d9169',
+    tagline:'在规则的缝隙里保全自己，用「活下来」代替「杀回去」。',
+    vector:[2.0, 1.8, 0.9, -1.2, 0.3],
+    dims:{
+      '韧性':'家族蒙冤、顶着别人的身份入府为婢，她没有垮掉，而是把「先活下来」当成第一要务，一点点攒本事、攒银钱、攒底气',
+      '边界感':'她始终清楚自己是谁、该做什么、不该越哪条线，既不主动挑衅，也不轻易把自己交出去',
+      '行动力':'她做事不张扬，但每一步都有明确目的，属于静水深流式的推进',
+      '情感表达':'她极少把情绪摆在脸上，喜欢也好、难过也好，都先收着，别人很难从她脸上读到心思',
+      '野心值':'她想要的是「好好活」，而不是「压过谁」，对权力的兴趣远小于对安稳的渴望'
+    }
+  },
+  {
+    key:'linjinqi',
+    name:'林锦岐',
+    actor:'刘学义',
+    color:'#5b7a94',
+    tagline:'认准了目标就往前推，唯独感情这件事，他始终慢半拍。',
+    vector:[1.5, 0.6, 2.0, -1.5, 1.0],
+    dims:{
+      '韧性':'年少从军，在血火里搏出头，扛得住事是他最底层的能力',
+      '边界感':'讲规矩、认职责，但不太在意人情世故那一套分寸',
+      '行动力':'目标导向，认准了就动手，是典型的「先做再说」',
+      '情感表达':'情感上迟钝且含蓄，心里有，但很少说出口',
+      '野心值':'有往上走的意愿，但更多是「把事做成」，而不是「把位置坐高」'
+    }
+  },
+  {
+    key:'zhaoxingtang',
+    name:'赵星棠',
+    actor:'李梦',
+    color:'#a8443a',
+    tagline:'不把情爱当归宿，把银钱和话语权攥在自己手里才睡得着。',
+    vector:[1.8, 0.3, 1.8, -0.5, 2.0],
+    dims:{
+      '韧性':'出身高门却不被允许识字，她没有认命，而是用另一种方式把局面攥在手里',
+      '边界感':'为了达到目的可以越过很多界限，规矩对她来说是工具，不是约束',
+      '行动力':'强势、直接，想做就做，不拖泥带水',
+      '情感表达':'不把情爱当归宿，情绪更多转化为手段，而不是倾诉',
+      '野心值':'她要的是掌控感——银钱、资源、话语权，都是安全感的来源'
+    }
+  },
+  {
+    key:'ducuique',
+    name:'杜翠雀',
+    actor:'郑合惠子',
+    color:'#8a6a9e',
+    tagline:'极致的自卑与极致的自负共生，欲望永远填不满。',
+    vector:[0.5, -0.8, 1.5, 0.3, 2.0],
+    dims:{
+      '韧性':'韧性不算差，但更多是靠一股不服输的劲顶着，容易内耗',
+      '边界感':'界限感偏弱，容易把别人的东西也当成自己应得的',
+      '行动力':'想往上走的时候行动很快，甚至不惜走极端',
+      '情感表达':'情绪起伏大，渴望被看见、被认可',
+      '野心值':'极度不安于现状，欲望永远填不满'
+    }
+  },
+  {
+    key:'lvjier',
+    name:'吕蕺儿',
+    actor:'刘美含',
+    color:'#b8873f',
+    tagline:'像野草一样，踩下去还能长起来；恩怨分明，重诺仗义。',
+    vector:[1.8, 0.9, 1.3, 0.7, 1.3],
+    dims:{
+      '韧性':'像野草一样，踩下去还能长起来',
+      '边界感':'有分寸，但比许兰香更愿意主动出击',
+      '行动力':'务实、灵活，会看人下菜碟，但答应的事一定办到',
+      '情感表达':'恩怨分明，喜欢和讨厌都不太藏着',
+      '野心值':'一心想要改写自己的境遇，但不介意一步一步来'
+    }
+  }
+];
+
+/* ---------- 20 道题 ---------- */
+/* 每个选项 v = [韧性, 边界感, 行动力, 情感表达, 野心值]，取值 -2 ~ +2 */
+const QUESTIONS = [
+  {
+    q:'你被安排进一个完全陌生的环境，周围的人一个都不认识。进门第一天，你会先做什么？',
+    o:[
+      {t:'不动声色地把每个人的脾气、身份、谁说话管用都摸一遍', v:[2,2,1,-1,0]},
+      {t:'找到管事的，问清楚自己的差事和规矩，先把边界划明白', v:[1,1,2,-1,1]},
+      {t:'先把手头的活干得挑不出错，让人先认可自己', v:[2,1,1,0,1]},
+      {t:'一边干活一边打量：这地方值不值得自己长待', v:[0,-1,1,0,2]}
+    ]
+  },
+  {
+    q:'有人当着众人的面，让你下不来台。',
+    o:[
+      {t:'当场不接话，脸上不带情绪，回头再想怎么处理', v:[2,2,0,-2,0]},
+      {t:'当场把话顶回去，让对方知道你不是好拿捏的', v:[1,0,2,0,1]},
+      {t:'笑着认下，把这事记在心里，以后有的是机会', v:[2,1,1,0,1]},
+      {t:'面上不显，心里已经把对方的软肋过了一遍', v:[1,-1,1,-1,2]}
+    ]
+  },
+  {
+    q:'你无意间知道了一件会牵连很多人的事。',
+    o:[
+      {t:'先记下来。这东西现在没用，将来未必没用', v:[1,-1,1,-1,2]},
+      {t:'迅速盘算这件事对各方的影响，决定要不要用、怎么用', v:[1,0,2,-1,2]},
+      {t:'找信得过的人先通个气，看对方什么态度', v:[1,1,1,1,0]},
+      {t:'直接去问当事人，宁可担风险也不愿意猜', v:[1,1,2,0,0]}
+    ]
+  },
+  {
+    q:'你手上突然多了一笔可以自由支配的钱。',
+    o:[
+      {t:'存起来，不动声色，只在自己最要紧的时候用', v:[2,2,0,-1,0]},
+      {t:'先想怎么让它生钱——钱才是最实在的底气', v:[1,0,2,-1,2]},
+      {t:'分一部分给帮过自己的人，剩下的留着铺路', v:[1,1,1,2,1]},
+      {t:'立刻拿去换一个能让自己往上走的机会', v:[0,-1,2,0,2]}
+    ]
+  },
+  {
+    q:'你被安排了一件明显不公平的差事。',
+    o:[
+      {t:'接下来，做好，不吵不闹，让人自己看见', v:[2,1,1,-1,0]},
+      {t:'先接下来，回头找机会把该说的话说到位', v:[2,1,1,1,1]},
+      {t:'当场问清楚依据，不合理就摆到明面上', v:[1,1,2,-1,0]},
+      {t:'接，但心里记着这笔账，早晚要讨回来', v:[1,0,1,-1,2]}
+    ]
+  },
+  {
+    q:'一个曾经帮过你的人来求你，可这件事对你不利。',
+    o:[
+      {t:'先衡量这事会不会影响自己的大局', v:[1,1,2,-1,1]},
+      {t:'帮。人家帮过我，这份情我认', v:[2,0,1,2,0]},
+      {t:'帮，但要让对方明白这份人情是有价的', v:[1,0,1,-1,2]},
+      {t:'心里其实不想帮，但会先应下来，看后面有没有转机', v:[0,-1,1,0,2]}
+    ]
+  },
+  {
+    q:'你被人误会了，解释起来还很麻烦。',
+    o:[
+      {t:'不解释。时间长了自然清楚，急着辩解反而落了下乘', v:[2,2,0,-2,0]},
+      {t:'看对象。重要的人就解释清楚，不重要的随他去', v:[1,1,1,-1,0]},
+      {t:'一定要说清楚，不能白白背这个黑锅', v:[1,1,1,2,0]},
+      {t:'不解气。与其解释，不如让对方以后不敢再误会', v:[1,0,2,-1,2]}
+    ]
+  },
+  {
+    q:'你的上司能力不如你，位置却比你高。',
+    o:[
+      {t:'做好自己的事，不评价、不越位', v:[2,2,0,-1,0]},
+      {t:'把自己的活干成不可替代的样子，位置自然会来', v:[2,1,2,0,2]},
+      {t:'找机会让对方看见自己的价值，然后谈条件', v:[1,0,2,0,1]},
+      {t:'心里不服，但会等到自己有实力的时候再说', v:[1,-1,1,-1,2]}
+    ]
+  },
+  {
+    q:'有一个机会能让你一步登天，但有风险。',
+    o:[
+      {t:'先评估最坏的结果自己能不能兜住，能就上', v:[2,1,2,-1,1]},
+      {t:'上。这种机会一辈子可能只有一次', v:[0,-1,2,0,2]},
+      {t:'上，但会留好后手，不让自己没有退路', v:[1,0,2,-1,2]},
+      {t:'先不动。不是自己的东西，拿了要还', v:[2,2,0,-1,0]}
+    ]
+  },
+  {
+    q:'有人对你示好，你摸不准对方的意图。',
+    o:[
+      {t:'保持距离，先看清楚再说', v:[2,2,0,-2,0]},
+      {t:'直接问，省得猜来猜去', v:[1,1,2,-1,0]},
+      {t:'接住这份好意，但心里留一分', v:[1,1,1,1,1]},
+      {t:'顺势而为，看看能不能变成自己的筹码', v:[1,0,2,-1,2]}
+    ]
+  },
+  {
+    q:'你被要求去做一件自己并不认同的事。',
+    o:[
+      {t:'做，但会在细节里保留自己的底线', v:[2,2,1,-1,0]},
+      {t:'先问清楚为什么，说不通就不做', v:[1,1,2,-1,0]},
+      {t:'做，但会想办法把结果往自己希望的方向带', v:[1,0,2,-1,2]},
+      {t:'表面上照做，实际上按自己的想法来', v:[1,-1,1,0,1]}
+    ]
+  },
+  {
+    q:'你发现自己被最信任的人利用了。',
+    o:[
+      {t:'不闹。先止损，再重新判断这个人', v:[2,2,1,-2,0]},
+      {t:'找对方当面对质，把话说清楚', v:[1,1,2,0,0]},
+      {t:'记下这笔账。以后对方再有事，就别怪我不认人', v:[2,1,1,1,1]},
+      {t:'让他付出代价。这种事不能有第二次', v:[1,0,2,0,2]}
+    ]
+  },
+  {
+    q:'你付出了很久，却一直没有回报。',
+    o:[
+      {t:'继续做。方向没错，早晚会到', v:[2,1,1,-1,0]},
+      {t:'停下来重新想，是不是方法出了问题', v:[1,1,2,-1,1]},
+      {t:'换条路走。不能在一棵树上吊死', v:[2,1,2,0,1]},
+      {t:'不甘心。凭什么我做了这么多，却什么都没有', v:[1,-1,1,1,2]}
+    ]
+  },
+  {
+    q:'有人在你面前哭诉自己的不幸。',
+    o:[
+      {t:'安静听着，不多说，也不轻易许诺', v:[2,2,0,-2,0]},
+      {t:'能帮就帮一把，谁都有难的时候', v:[1,0,1,2,0]},
+      {t:'先判断对方是真的难，还是想从我这拿点什么', v:[1,0,2,-1,1]},
+      {t:'听着，心里想的是——我和他其实也没什么不同', v:[1,-1,0,1,1]}
+    ]
+  },
+  {
+    q:'你需要在一个新群体里站稳脚跟。',
+    o:[
+      {t:'先做事，用结果说话，不急着表态', v:[1,1,2,-1,1]},
+      {t:'先看清楚这个群体里谁说了算，再决定怎么站位', v:[2,2,1,-1,0]},
+      {t:'主动跟人打交道，人情是最快的路', v:[1,1,2,2,1]},
+      {t:'找一个能让自己快速被看见的机会', v:[1,-1,2,0,2]}
+    ]
+  },
+  {
+    q:'你必须和一个你很讨厌的人合作。',
+    o:[
+      {t:'公事公办，不掺杂私人情绪', v:[1,1,2,-2,0]},
+      {t:'面上过得去，心里划清界限', v:[2,2,1,-2,0]},
+      {t:'合作归合作，但不会让对方占到便宜', v:[1,0,2,-1,2]},
+      {t:'忍着。等这件事完了再说', v:[2,1,1,0,0]}
+    ]
+  },
+  {
+    q:'你有机会揭穿一个谎言，但会牵连到无辜的人。',
+    o:[
+      {t:'看这个人对我重要不重要，再决定说不说', v:[1,1,1,1,1]},
+      {t:'说，但会想办法把伤害降到最低', v:[1,1,2,-1,1]},
+      {t:'说。真相就是真相，其他的不是我要考虑的', v:[1,0,2,-1,2]},
+      {t:'不说。这件事对我没好处，何必出头', v:[1,-1,1,-1,2]}
+    ]
+  },
+  {
+    q:'你被安排去做一件琐碎、没人愿意做的事。',
+    o:[
+      {t:'做。事情没有高低，做完了自然有人看见', v:[2,1,1,1,1]},
+      {t:'做，但只做到及格线，把力气留给更重要的事', v:[1,1,2,-1,1]},
+      {t:'做，心里清楚这是在积累，不是终点', v:[2,2,1,-1,1]},
+      {t:'做不下去。这种位置待久了，人会废掉', v:[0,-1,1,1,2]}
+    ]
+  },
+  {
+    q:'你终于等到了一次翻身的机会。',
+    o:[
+      {t:'稳住，一步一步来，不冒进', v:[2,2,1,-1,0]},
+      {t:'全力抓住，不留余地', v:[1,-1,2,0,2]},
+      {t:'抓住，同时把该谈的条件谈清楚', v:[1,1,2,-1,1]},
+      {t:'抓住，而且要让以前看轻自己的人都看见', v:[1,0,2,0,2]}
+    ]
+  },
+  {
+    q:'回头看，你觉得自己是靠什么走到今天的？',
+    o:[
+      {t:'忍。忍住了别人忍不住的，才等到别人等不到的', v:[2,2,0,-2,0]},
+      {t:'狠。对自己狠，对别人也不手软', v:[2,0,2,-1,2]},
+      {t:'拼。别人不愿意做的事我做了，别人吃不了的苦我吃了', v:[2,1,2,1,1]},
+      {t:'争。凭什么别人有的，我不能有', v:[1,-1,2,1,2]}
+    ]
+  }
+];
+
+/* =========================================================
+   状态
+   ========================================================= */
+let current = 0;
+const answers = new Array(QUESTIONS.length).fill(null);
+
+const el = id => document.getElementById(id);
+const screenIntro = el('screen-intro');
+const screenQuiz  = el('screen-quiz');
+const screenResult= el('screen-result');
+const questionArea= el('questionArea');
+const prevBtn     = el('prevBtn');
+
+/* =========================================================
+   工具函数
+   ========================================================= */
+const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
+const toPct = v => Math.round((clamp(v,-2,2) + 2) / 4 * 100);
+
+function hexA(hex, a){
+  const h = hex.replace('#','');
+  return `rgba(${parseInt(h.substr(0,2),16)},${parseInt(h.substr(2,2),16)},${parseInt(h.substr(4,2),16)},${a})`;
+}
+
+function distance(a,b){
+  let s = 0;
+  for(let i=0;i<a.length;i++) s += (a[i]-b[i])*(a[i]-b[i]);
+  return Math.sqrt(s);
+}
+
+function baikeLink(name){
+  return 'https://baike.baidu.com/search/word?word=' + encodeURIComponent('兰香如故 ' + name);
+}
+
+/* =========================================================
+   答题流程
+   ========================================================= */
+el('startBtn').addEventListener('click', () => {
+  screenIntro.classList.add('hidden');
+  screenQuiz.classList.remove('hidden');
+  current = 0;
+  renderQuestion();
+});
+
+prevBtn.addEventListener('click', () => {
+  if(current > 0){ current--; renderQuestion(); }
+});
+
+questionArea.addEventListener('click', e => {
+  const btn = e.target.closest('.option');
+  if(!btn) return;
+  const idx = parseInt(btn.dataset.i, 10);
+  if(isNaN(idx)) return;
+
+  answers[current] = idx;
+
+  // 视觉反馈
+  questionArea.querySelectorAll('.option').forEach(o => o.classList.remove('selected'));
+  btn.classList.add('selected');
+
+  setTimeout(() => {
+    if(current < QUESTIONS.length - 1){
+      current++;
+      renderQuestion();
+    }else{
+      showResult();
+    }
+  }, 200);
+});
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  const total = QUESTIONS.length;
+
+  el('qIndex').textContent = `第 ${current+1} / ${total} 题`;
+  const pct = Math.round((current) / total * 100);
+  el('qPercent').textContent = pct + '%';
+  el('progressFill').style.width = ((current) / total * 100) + '%';
+
+  prevBtn.disabled = current === 0;
+  prevBtn.textContent = current === 0 ? '这是第一题' : '← 上一题';
+
+  const chosen = answers[current];
+
+  questionArea.innerHTML =
+    `<h2 class="q-title">${q.q}</h2>` +
+    `<div class="options">` +
+    q.o.map((opt, i) =>
+      `<button class="option${chosen===i?' selected':''}" data-i="${i}" type="button">
+         <span class="opt-key">${'ABCD'[i]}</span>
+         <span class="opt-text">${opt.t}</span>
+       </button>`
+    ).join('') +
+    `</div>`;
+
+  // 重启动画
+  questionArea.classList.remove('anim');
+  void questionArea.offsetWidth;
+  questionArea.classList.add('anim');
+
+  window.scrollTo({top:0, behavior:'instant' in window ? 'instant' : 'auto'});
+}
+
+/* =========================================================
+   计分
+   ========================================================= */
+function computeUserVector(){
+  const sum = [0,0,0,0,0];
+  answers.forEach((optIdx, qi) => {
+    const v = QUESTIONS[qi].o[optIdx].v;
+    for(let i=0;i<5;i++) sum[i] += v[i];
+  });
+  return sum.map(s => s / QUESTIONS.length);
+}
+
+function computeMatches(userVec){
+  const list = ROLES.map(role => {
+    const d = distance(userVec, role.vector);
+    const score = Math.min(97, Math.round(100 * Math.pow(0.90, d)));
+    return { role, d, score };
+  });
+  list.sort((a,b) => a.d - b.d);
+  return list;
+}
+
+/* =========================================================
+   匹配理由生成
+   ========================================================= */
+function buildReasons(userVec, role, count){
+  const pairs = DIMS.map((d,i) => ({ d, i, u:userVec[i], r:role.vector[i] }));
+  const byClose = [...pairs].sort((a,b) => Math.abs(a.u-a.r) - Math.abs(b.u-b.r));
+  const byHigh  = [...pairs].sort((a,b) => b.u - a.u);
+
+  const out = [];
+  const used = new Set();
+
+  // 1. 用户最高维度
+  const top = byHigh[0];
+  out.push(`你在「${top.d}」一项上得分最高（${toPct(top.u)} 分），这也是${role.name}最鲜明的底色——${role.dims[top.d]}。`);
+  used.add(top.d);
+
+  // 2. 与角色最接近的维度
+  for(const p of byClose){
+    if(used.has(p.d)) continue;
+    out.push(`你的「${p.d}」拿到 ${toPct(p.u)} 分，与${role.name}的基准（${toPct(p.r)} 分）几乎重合：${role.dims[p.d]}。`);
+    used.add(p.d);
+    break;
+  }
+
+  // 3. 次高维度
+  const top2 = byHigh.find(p => !used.has(p.d));
+  if(top2){
+    out.push(`「${top2.d}」同样是你的强项（${toPct(top2.u)} 分），对应${role.name}身上的另一点：${role.dims[top2.d]}。`);
+    used.add(top2.d);
+  }
+
+  // 4. 差异说明
+  const far = byClose[byClose.length - 1];
+  if(far && Math.abs(far.u - far.r) > 0.35){
+    if(far.u < far.r){
+      out.push(`有一点要说清楚：${role.name}在「${far.d}」上比你走得更远（角色 ${toPct(far.r)} 分 / 你 ${toPct(far.u)} 分）——${role.dims[far.d]}；而你在这一点上，给自己留了更多余地。`);
+    }else{
+      out.push(`有意思的是，你在「${far.d}」上甚至超过了${role.name}的基准（你 ${toPct(far.u)} 分 / 角色 ${toPct(far.r)} 分）——${role.dims[far.d]}，这一点你比 TA 走得更远。`);
+    }
+  }
+
+  return out.slice(0, count);
+}
+
+/* =========================================================
+   结果渲染
+   ========================================================= */
+let resultData = null;
+
+function showResult(){
+  const userVec = computeUserVector();
+  const matches = computeMatches(userVec);
+  const first = matches[0];
+  const second = matches[1];
+
+  resultData = { userVec, first, second };
+
+  const firstReasons  = buildReasons(userVec, first.role, 4);
+  const secondReasons = buildReasons(userVec, second.role, 2);
+
+  const dimRows = DIMS.map((d,i) => {
+    const u = toPct(userVec[i]);
+    const r = toPct(first.role.vector[i]);
+    return `<li>
+      <div class="dim-head"><b>${d}</b><span>你 ${u} · ${first.role.name} ${r}</span></div>
+      <div class="dim-track">
+        <i class="r" style="width:${r}%"></i>
+        <i class="u" style="width:${u}%"></i>
+      </div>
+    </li>`;
+  }).join('');
+
+  el('resultArea').innerHTML = `
+    <div class="result-head">
+      <p class="result-kicker">你 的 测 试 结 果</p>
+      <h1 class="result-title serif">你是<em>${first.role.name}</em></h1>
+    </div>
+
+    <div class="match-card first" style="--c:${first.role.color}">
+      <div class="match-badge">第一匹配</div>
+      <div class="match-name serif">${first.role.name}</div>
+      <div class="match-actor">${first.role.actor} 饰</div>
+      <p class="match-tagline">${first.role.tagline}</p>
+      <div class="match-score"><span class="score-num">${first.score}</span><span class="score-unit">%</span></div>
+      <div class="match-bar"><i style="width:0" data-w="${first.score}"></i></div>
+    </div>
+
+    <div class="match-card second" style="--c:${second.role.color}">
+      <div class="match-badge">第二匹配</div>
+      <div class="match-name serif">${second.role.name}</div>
+      <div class="match-actor">${second.role.actor} 饰</div>
+      <p class="match-tagline">${second.role.tagline}</p>
+      <div class="match-score"><span class="score-num">${second.score}</span><span class="score-unit">%</span></div>
+      <div class="match-bar"><i style="width:0" data-w="${second.score}"></i></div>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">五维画像</h2>
+      <div class="radar-wrap"><canvas id="radarCanvas"></canvas></div>
+      <div class="radar-legend">
+        <span><i class="dot user"></i>你</span>
+        <span><i class="dot role"></i>${first.role.name}基准</span>
+      </div>
+      <ul class="dim-list">${dimRows}</ul>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">为什么是 ${first.role.name}</h2>
+      <ol class="reason-list">
+        ${firstReasons.map(r => `<li>${r}</li>`).join('')}
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">你身上的 ${second.role.name}</h2>
+      <ol class="reason-list">
+        ${secondReasons.map(r => `<li>${r}</li>`).join('')}
+      </ol>
+    </div>
+
+    <div class="panel">
+      <h2 class="panel-title">人物资料</h2>
+      <a class="link-item" href="${baikeLink(first.role.name)}" target="_blank" rel="noopener noreferrer">
+        ${first.role.name} · 百度百科 <span>↗</span>
+      </a>
+      <a class="link-item" href="${baikeLink(second.role.name)}" target="_blank" rel="noopener noreferrer">
+        ${second.role.name} · 百度百科 <span>↗</span>
+      </a>
+      <a class="link-item" href="${baikeLink('')}" target="_blank" rel="noopener noreferrer">
+        《兰香如故》剧集 · 百度百科 <span>↗</span>
+      </a>
+    </div>
+
+    <p class="disclaimer">
+      本测试仅供娱乐参考，结果不构成心理学专业判断。<br>
+      所有计算均在你的设备本地完成，不收集、不上传任何答题数据。
+    </p>
+
+    <button class="btn-retry" id="retryBtn">重新测试</button>
+  `;
+
+  screenQuiz.classList.add('hidden');
+  screenResult.classList.remove('hidden');
+  window.scrollTo(0,0);
+
+  // 进度条动画
+  requestAnimationFrame(() => {
+    document.querySelectorAll('.match-bar i').forEach(bar => {
+      bar.style.width = bar.dataset.w + '%';
+    });
+  });
+
+  // 绘制雷达图
+  requestAnimationFrame(() => {
+    const canvas = el('radarCanvas');
+    if(canvas) drawRadar(canvas, userVec, first.role.vector, first.role.color);
+  });
+
+  el('retryBtn').addEventListener('click', resetAll);
+}
+
+function resetAll(){
+  answers.fill(null);
+  current = 0;
+  resultData = null;
+  screenResult.classList.add('hidden');
+  screenIntro.classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+/* =========================================================
+   雷达图（原生 Canvas，无第三方库）
+   ========================================================= */
+function drawRadar(canvas, userVec, roleVec, roleColor){
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = canvas.parentElement.clientWidth || 300;
+  const cssH = Math.max(280, Math.min(cssW, 340));
+
+  canvas.style.width = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.width = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,cssW,cssH);
+
+  const cx = cssW / 2;
+  const cy = cssH / 2;
+  const R = Math.min(cssW, cssH) * 0.30;
+  const n = DIMS.length;
+  const angle = i => -Math.PI/2 + i * 2 * Math.PI / n;
+  const norm = v => (clamp(v,-2,2) + 2) / 4;
+
+  // 网格
+  for(let lv=1; lv<=4; lv++){
+    const r = R * lv / 4;
+    ctx.beginPath();
+    for(let i=0;i<n;i++){
+      const a = angle(i);
+      const x = cx + Math.cos(a)*r, y = cy + Math.sin(a)*r;
+      i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = 'rgba(90,107,82,0.14)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  // 轴线
+  for(let i=0;i<n;i++){
+    const a = angle(i);
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(a)*R, cy + Math.sin(a)*R);
+    ctx.strokeStyle = 'rgba(90,107,82,0.14)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+
+  const pts = vec => vec.map((v,i) => {
+    const a = angle(i);
+    const r = R * norm(v);
+    return [cx + Math.cos(a)*r, cy + Math.sin(a)*r];
+  });
+
+  // 角色多边形
+  const rolePts = pts(roleVec);
+  ctx.beginPath();
+  rolePts.forEach(([x,y],i) => i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+  ctx.closePath();
+  ctx.fillStyle = hexA(roleColor, 0.14);
+  ctx.fill();
+  ctx.setLineDash([4,3]);
+  ctx.strokeStyle = hexA(roleColor, 0.65);
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // 用户多边形
+  const userPts = pts(userVec);
+  ctx.beginPath();
+  userPts.forEach(([x,y],i) => i===0 ? ctx.moveTo(x,y) : ctx.lineTo(x,y));
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(168,68,58,0.18)';
+  ctx.fill();
+  ctx.strokeStyle = '#a8443a';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+
+  // 用户顶点
+  userPts.forEach(([x,y]) => {
+    ctx.beginPath();
+    ctx.arc(x, y, 3.2, 0, Math.PI*2);
+    ctx.fillStyle = '#a8443a';
+    ctx.fill();
+  });
+
+  // 标签
+  const fontMain = '12px -apple-system,"PingFang SC","Microsoft YaHei",sans-serif';
+  const fontNum  = '11px -apple-system,"PingFang SC",sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  for(let i=0;i<n;i++){
+    const a = angle(i);
+    const lx = cx + Math.cos(a) * (R + 24);
+    const ly = cy + Math.sin(a) * (R + 24);
+
+    ctx.font = fontMain;
+    ctx.fillStyle = '#4a5648';
+    ctx.fillText(DIMS[i], lx, ly);
+
+    ctx.font = fontNum;
+    ctx.fillStyle = '#a8443a';
+    ctx.fillText(toPct(userVec[i]), lx, ly + 14);
+  }
+}
+
+/* 屏幕旋转 / 尺寸变化时重绘 */
+let resizeTimer = null;
+window.addEventListener('resize', () => {
+  if(!resultData) return;
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    const canvas = el('radarCanvas');
+    if(canvas) drawRadar(canvas, resultData.userVec, resultData.first.role.vector, resultData.first.role.color);
+  }, 180);
+});
+</script>
+</body>
+</html>
